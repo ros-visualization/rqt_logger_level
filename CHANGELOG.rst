@@ -2,6 +2,9 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming changes
+-------------------
+
 0.4.7 (2017-03-02)
 ------------------
 
