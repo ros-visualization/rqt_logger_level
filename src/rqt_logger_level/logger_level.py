@@ -37,10 +37,12 @@ from .logger_level_service_caller import LoggerLevelServiceCaller
 
 
 class LoggerLevel(Plugin):
+
     """
     rqt_logger_level plugin's main class. Creates a widget and a
     service caller object and displays the widget.
     """
+
     def __init__(self, context):
         """
         :param context: plugin context hook to enable adding widgets as a ROS_GUI pane, ''PluginContext''
@@ -51,7 +53,8 @@ class LoggerLevel(Plugin):
         self._widget = LoggerLevelWidget(self._service_caller)
 
         if context.serial_number() > 1:
-            self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
+            self._widget.setWindowTitle(
+                self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         context.add_widget(self._widget)
 
     def shutdown_plugin(self):
@@ -65,6 +68,6 @@ class LoggerLevel(Plugin):
         # TODO: implement restore functionality for the current logger states
         pass
 
-    #def trigger_configuration(self):
+    # def trigger_configuration(self):
         # Comment in to signal that the plugin has a way to configure it
         # Usually used to open a dialog to offer the user a set of configuration

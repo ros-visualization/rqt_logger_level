@@ -38,10 +38,12 @@ from python_qt_binding.QtCore import QObject, qWarning
 
 
 class LoggerLevelServiceCaller(QObject):
+
     """
     Handles service calls for getting lists of nodes and loggers
     Also handles sending requests to change logger levels
     """
+
     def __init__(self):
         super(LoggerLevelServiceCaller, self).__init__()
 
