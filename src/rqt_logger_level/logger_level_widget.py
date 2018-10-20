@@ -39,12 +39,15 @@ from python_qt_binding.QtWidgets import QWidget
 
 
 class LoggerLevelWidget(QWidget):
+
     """
     Widget for use with LoggerLevelServiceCaller class to alter the ROS logger levels
     """
+
     def __init__(self, caller):
         """
-        :param caller: service caller instance for sending service calls, ''LoggerLevelServiceCaller''
+        :param caller:
+            service caller instance for sending service calls, ''LoggerLevelServiceCaller''
         """
         super(LoggerLevelWidget, self).__init__()
         rp = rospkg.RosPack()
@@ -103,24 +106,31 @@ class LoggerLevelWidget(QWidget):
         if row == -1:
             return
         if row < 0 or row >= self.logger_list.count():
-            qWarning('Logger row %s out of bounds. Current count: %s' % (row, self.logger_list.count()))
+            qWarning('Logger row %s out of bounds. Current count: %s' %
+                     (row, self.logger_list.count()))
             return
         if self.level_list.count() == 0:
             for level in self._caller.get_levels():
                 self.level_list.addItem(level)
         for index in range(self.level_list.count()):
-            if self.level_list.item(index).text().lower() == self._caller._current_levels[self.logger_list.currentItem().text()].lower():
+            if self.level_list.item(index).text().lower() == \
+                    self._caller._current_levels[self.logger_list.currentItem().text()].lower():
                 self.level_list.setCurrentRow(index)
 
     def level_changed(self, row):
         """
         Handles the rowchanged event for the level_list widget
-        Makes a service call to change the logger level for the indicated node/logger to the selected value
+        Makes a service call to change the logger level for the indicated node/logger to the
+        selected value
         :param row: the selected row in level_list, ''int''
         """
         if row == -1:
             return
         if row < 0 or row >= self.level_list.count():
-            qWarning('Level row %s out of bounds. Current count: %s' % (row, self.level_list.count()))
+            qWarning('Level row %s out of bounds. Current count: %s' %
+                     (row, self.level_list.count()))
             return
-        self._caller.send_logger_change_message(self.node_list.currentItem().text(), self.logger_list.currentItem().text(), self.level_list.item(row).text())
+        self._caller.send_logger_change_message(
+            self.node_list.currentItem().text(),
+            self.logger_list.currentItem().text(),
+            self.level_list.item(row).text())
