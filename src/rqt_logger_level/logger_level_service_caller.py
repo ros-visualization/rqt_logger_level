@@ -30,11 +30,10 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import rosnode
-import rospy
-import rosservice
+import rclpy
 
 from python_qt_binding.QtCore import QObject, qWarning
+from rqt_py_common.message_helpers import get_service_class
 
 
 class LoggerLevelServiceCaller(QObject):
@@ -44,8 +43,9 @@ class LoggerLevelServiceCaller(QObject):
     Also handles sending requests to change logger levels
     """
 
-    def __init__(self):
+    def __init__(self, context):
         super(LoggerLevelServiceCaller, self).__init__()
+        self._context = context
 
     def get_levels(self):
         return [self.tr('Debug'), self.tr('Info'), self.tr('Warn'), self.tr('Error'), self.tr('Fatal')]
@@ -61,12 +61,16 @@ class LoggerLevelServiceCaller(QObject):
         Gets a list of available services via a ros service call.
         :returns: a list of all nodes that provide the set_logger_level service, ''list(str)''
         """
-        set_logger_level_nodes = []
-        nodes = rosnode.get_node_names()
-        for name in sorted(nodes):
-            for service in rosservice.get_service_list(name):
-                if service == name + '/set_logger_level':
-                    set_logger_level_nodes.append(name)
+        service_name = '/set_logger_level'
+
+        # Get available nodes and services
+        nodes = set(self._context.get_node_names())
+        services = self._context.get_service_names_and_types()
+
+        # Filter and sort nodes by whether they offer the set_logger_level service
+        applicable_nodes = (service.replace(service_name, '') for service, _ in services if service_name in service)
+        set_logger_level_nodes = sorted((node for node in applicable_nodes if node in nodes))
+
         return set_logger_level_nodes
 
     def _refresh_loggers(self, node):
@@ -77,19 +81,25 @@ class LoggerLevelServiceCaller(QObject):
         self._current_loggers = []
         self._current_levels = {}
         servicename = node + '/get_loggers'
-        try:
-            service = rosservice.get_service_class_by_name(servicename)
-        except rosservice.ROSServiceIOException as e:
-            qWarning('During get_service_class_by_name "%s":\n%s' % (servicename, e))
+        services = dict(self._context.get_service_names_and_types())
+        if servicename not in services:
+            qWarning('Service "{}" is not currently available'.format(servicename))
             return False
-        request = service._request_class()
-        proxy = rospy.ServiceProxy(str(servicename), service)
-        try:
-            response = proxy(request)
-        except rospy.ServiceException as e:
-            qWarning('SetupDialog.get_loggers(): request:\n%s' % (type(request)))
-            qWarning('SetupDialog.get_loggers() "%s":\n%s' % (servicename, e))
+
+        service_type_name = services[servicename]
+        service_class = get_service_class(service_type_name)
+        request = service_class.Request()
+
+        cli = node.create_client(service_class, servicename)
+        future = cli.call_async(request)
+        rclpy.spin_until_future_complete(node, future)
+
+        if future.result() is None:
+            qWarning('Exception while calling service: %r' % future.exception())
             return False
+
+        response = future.result()
+
 
         if response._slot_types[0] == 'roscpp/Logger[]':
             for logger in getattr(response, response.__slots__[0]):
@@ -113,16 +123,26 @@ class LoggerLevelServiceCaller(QObject):
         if self._current_levels[logger].lower() == level.lower():
             return False
 
-        service = rosservice.get_service_class_by_name(servicename)
-        request = service._request_class()
+        services = dict(self._context.get_service_names_and_types())
+        if servicename not in services:
+            qWarning('Service "{}" is not currently available'.format(servicename))
+            return False
+
+        service_type_name = services[servicename]
+        service_class = get_service_class(service_type_name)
+        request = service_class.Request()
+
         setattr(request, 'logger', logger)
         setattr(request, 'level', level)
-        proxy = rospy.ServiceProxy(str(servicename), service)
-        try:
-            proxy(request)
-            self._current_levels[logger] = level.upper()
-        except rospy.ServiceException as e:
-            qWarning('SetupDialog.level_changed(): request:\n%r' % (request))
-            qWarning('SetupDialog.level_changed() "%s":\n%s' % (servicename, e))
+
+        cli = node.create_client(service_class, servicename)
+        future = cli.call_async(request)
+        rclpy.spin_until_future_complete(node, future)
+
+        if future.result() is None:
+            qWarning('Exception while calling service: %r' % future.exception())
             return False
+
+        response = future.result()
+        self._current_levels[logger] = response.level
         return True

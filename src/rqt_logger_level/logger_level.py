@@ -48,8 +48,9 @@ class LoggerLevel(Plugin):
         :param context: plugin context hook to enable adding widgets as a ROS_GUI pane, ''PluginContext''
         """
         super(LoggerLevel, self).__init__(context)
+        self._context = context
         self.setObjectName('LoggerLevel')
-        self._service_caller = LoggerLevelServiceCaller()
+        self._service_caller = LoggerLevelServiceCaller(context)
         self._widget = LoggerLevelWidget(self._service_caller)
 
         if context.serial_number() > 1:
