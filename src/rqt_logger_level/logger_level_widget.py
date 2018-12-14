@@ -31,8 +31,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import rclpy
-from rclpy.logging import LoggingSeverity
+# import rospkg
+# import rclpy
+# from rclpy.logging import LoggingSeverity
 
 from ament_index_python.resources import get_resource
 
@@ -47,9 +48,10 @@ class LoggerLevelWidget(QWidget):
     Widget for use with LoggerLevelServiceCaller class to alter the ROS logger levels
     """
 
-    def __init__(self, node):
+    def __init__(self, caller):
         """
-        :param node: shared rqt node
+        :param caller:
+            service caller instance for sending service calls, ''LoggerLevelServiceCaller''
         """
         super(LoggerLevelWidget, self).__init__()
 
@@ -60,7 +62,7 @@ class LoggerLevelWidget(QWidget):
 
         loadUi(ui_file, self)
         self.setObjectName('LoggerLevelWidget')
-        self._node = node
+        self._caller = caller
 
         self.node_list.currentRowChanged[int].connect(self.node_changed)
         # self.logger_list.currentRowChanged[int].connect(self.logger_changed)
@@ -79,11 +81,8 @@ class LoggerLevelWidget(QWidget):
         self.level_list.clear()
         # self.logger_list.clear()
         self.node_list.clear()
-        for name in self._node.get_node_names():
+        for name in self._caller.get_node_names():
             self.node_list.addItem(name)
-
-    def get_levels(self):
-        return [self.tr('Debug'), self.tr('Info'), self.tr('Warn'), self.tr('Error'), self.tr('Fatal')]
 
     def node_changed(self, row):
         """
@@ -96,31 +95,17 @@ class LoggerLevelWidget(QWidget):
         if row < 0 or row >= self.node_list.count():
             qWarning('Node row %s out of bounds. Current count: %s' % (row, self.node_list.count()))
             return
-        # self.logger_list.clear()
-        self.level_list.clear()
-        # logger = self.node_list.item(row).text()
-        # self.logger_list.addItem(logger)
-        # self.logger_list.setCurrentRow(0)
 
-    # def logger_changed(self, row):
-    #     """
-    #     Handles the rowchanged event for the logger_list widget
-    #     Populates level_list with the levels for the logger selected
-    #     :param row: the selected row in logger_list, ''int''
-    #     """
-    #     if row == -1:
-    #         return
-    #     if row < 0 or row >= self.logger_list.count():
-    #         qWarning('Logger row %s out of bounds. Current count: %s' %
-    #                  (row, self.logger_list.count()))
-    #         return
-    #     if self.level_list.count() == 0:
-        for level in self.get_levels():
-            self.level_list.addItem(level)
-    #     for index in range(self.level_list.count()):
-    #         if self.level_list.item(index).text().lower() == \
-    #                 self._current_levels[self.logger_list.currentItem().text()].lower():
-    #             self.level_list.setCurrentRow(index)
+        if self.level_list.count() == 0:
+            for level in self._caller.get_levels():
+                self.level_list.addItem(level)
+
+        logger_level = self._caller.get_logger_level(
+            self.node_list.currentItem().text())
+
+        for index in range(self.level_list.count()):
+            if self.level_list.item(index).text().lower() == logger_level.lower():
+                self.level_list.setCurrentRow(index)
 
     def level_changed(self, row):
         """
@@ -135,10 +120,7 @@ class LoggerLevelWidget(QWidget):
             qWarning('Level row %s out of bounds. Current count: %s' %
                      (row, self.level_list.count()))
             return
-        logging_level_text = self.level_list.item(row).text()
-        logging_level = getattr(LoggingSeverity, logging_level_text.upper())
 
-        # TODO implement services and service caller
-        rclpy.logging.set_logger_level(
+        self._caller.send_logger_change_message(
             self.node_list.currentItem().text(),
-            logging_level)
+            self.level_list.item(row).text())
