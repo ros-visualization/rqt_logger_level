@@ -38,20 +38,6 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Loggers</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QListWidget" name="logger_list"/>
-       </item>
-      </layout>
-     </item>
-     <item>
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <widget class="QLabel" name="label_4">

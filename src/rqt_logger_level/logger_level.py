@@ -32,12 +32,10 @@
 
 from qt_gui.plugin import Plugin
 
-from .logger_level_widget import LoggerLevelWidget
-from .logger_level_service_caller import LoggerLevelServiceCaller
+from rqt_logger_level.logger_level_widget import LoggerLevelWidget
 
 
 class LoggerLevel(Plugin):
-
     """
     rqt_logger_level plugin's main class. Creates a widget and a
     service caller object and displays the widget.
@@ -45,12 +43,13 @@ class LoggerLevel(Plugin):
 
     def __init__(self, context):
         """
-        :param context: plugin context hook to enable adding widgets as a ROS_GUI pane, ''PluginContext''
+        :param context:
+            plugin context hook to enable adding widgets as a ROS_GUI pane, ''PluginContext''
         """
         super(LoggerLevel, self).__init__(context)
         self.setObjectName('LoggerLevel')
-        self._service_caller = LoggerLevelServiceCaller()
-        self._widget = LoggerLevelWidget(self._service_caller)
+        self._node = context.node
+        self._widget = LoggerLevelWidget(self._node)
 
         if context.serial_number() > 1:
             self._widget.setWindowTitle(
