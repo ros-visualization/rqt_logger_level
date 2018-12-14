@@ -33,6 +33,7 @@
 from qt_gui.plugin import Plugin
 
 from rqt_logger_level.logger_level_widget import LoggerLevelWidget
+from rqt_logger_level.logger_level_service_caller import LoggerLevelServiceCaller
 
 
 class LoggerLevel(Plugin):
@@ -49,7 +50,8 @@ class LoggerLevel(Plugin):
         super(LoggerLevel, self).__init__(context)
         self.setObjectName('LoggerLevel')
         self._node = context.node
-        self._widget = LoggerLevelWidget(self._node)
+        self._caller = LoggerLevelServiceCaller(self._node)
+        self._widget = LoggerLevelWidget(self._caller, self._node)
 
         if context.serial_number() > 1:
             self._widget.setWindowTitle(
