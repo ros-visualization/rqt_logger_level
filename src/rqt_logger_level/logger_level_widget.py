@@ -31,7 +31,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import rospkg
+# import rospkg
+# import rclpy
+# from rclpy.logging import LoggingSeverity
+
+from ament_index_python.resources import get_resource
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import qWarning
@@ -50,14 +54,18 @@ class LoggerLevelWidget(QWidget):
             service caller instance for sending service calls, ''LoggerLevelServiceCaller''
         """
         super(LoggerLevelWidget, self).__init__()
-        rp = rospkg.RosPack()
-        ui_file = os.path.join(rp.get_path('rqt_logger_level'), 'resource', 'logger_level.ui')
+
+        pkg_name = 'rqt_logger_level'
+        _, package_path = get_resource('packages', pkg_name)
+        ui_file = os.path.join(
+            package_path, 'share', pkg_name, 'resource', 'logger_level.ui')
+
         loadUi(ui_file, self)
         self.setObjectName('LoggerLevelWidget')
         self._caller = caller
 
         self.node_list.currentRowChanged[int].connect(self.node_changed)
-        self.logger_list.currentRowChanged[int].connect(self.logger_changed)
+        # self.logger_list.currentRowChanged[int].connect(self.logger_changed)
         self.level_list.currentRowChanged[int].connect(self.level_changed)
         self.refresh_button.clicked[bool].connect(self.refresh_nodes)
 
@@ -71,7 +79,7 @@ class LoggerLevelWidget(QWidget):
         As a side effect the level and logger lists are cleared
         """
         self.level_list.clear()
-        self.logger_list.clear()
+        # self.logger_list.clear()
         self.node_list.clear()
         for name in self._caller.get_node_names():
             self.node_list.addItem(name)
@@ -87,34 +95,16 @@ class LoggerLevelWidget(QWidget):
         if row < 0 or row >= self.node_list.count():
             qWarning('Node row %s out of bounds. Current count: %s' % (row, self.node_list.count()))
             return
-        self.logger_list.clear()
-        self.level_list.clear()
-        loggers = self._caller.get_loggers(self.node_list.item(row).text())
-        if len(loggers) == 0:
-            return
-        for logger in sorted(loggers):
-            self.logger_list.addItem(logger)
-        if self.logger_list.count() != 0:
-            self.logger_list.setCurrentRow(0)
 
-    def logger_changed(self, row):
-        """
-        Handles the rowchanged event for the logger_list widget
-        Populates level_list with the levels for the logger selected
-        :param row: the selected row in logger_list, ''int''
-        """
-        if row == -1:
-            return
-        if row < 0 or row >= self.logger_list.count():
-            qWarning('Logger row %s out of bounds. Current count: %s' %
-                     (row, self.logger_list.count()))
-            return
         if self.level_list.count() == 0:
             for level in self._caller.get_levels():
                 self.level_list.addItem(level)
+
+        logger_level = self._caller.get_logger_level(
+            self.node_list.currentItem().text())
+
         for index in range(self.level_list.count()):
-            if self.level_list.item(index).text().lower() == \
-                    self._caller._current_levels[self.logger_list.currentItem().text()].lower():
+            if self.level_list.item(index).text().lower() == logger_level.lower():
                 self.level_list.setCurrentRow(index)
 
     def level_changed(self, row):
@@ -130,7 +120,7 @@ class LoggerLevelWidget(QWidget):
             qWarning('Level row %s out of bounds. Current count: %s' %
                      (row, self.level_list.count()))
             return
+
         self._caller.send_logger_change_message(
             self.node_list.currentItem().text(),
-            self.logger_list.currentItem().text(),
             self.level_list.item(row).text())

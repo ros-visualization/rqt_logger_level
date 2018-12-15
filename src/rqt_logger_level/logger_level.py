@@ -32,8 +32,8 @@
 
 from qt_gui.plugin import Plugin
 
-from .logger_level_widget import LoggerLevelWidget
-from .logger_level_service_caller import LoggerLevelServiceCaller
+from rqt_logger_level.logger_level_widget import LoggerLevelWidget
+from rqt_logger_level.logger_level_service_caller import LoggerLevelServiceCaller
 
 
 class LoggerLevel(Plugin):
@@ -49,7 +49,8 @@ class LoggerLevel(Plugin):
         """
         super(LoggerLevel, self).__init__(context)
         self.setObjectName('LoggerLevel')
-        self._service_caller = LoggerLevelServiceCaller()
+        self._node = context.node
+        self._service_caller = LoggerLevelServiceCaller(self._node)
         self._widget = LoggerLevelWidget(self._service_caller)
 
         if context.serial_number() > 1:
