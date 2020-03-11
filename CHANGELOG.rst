@@ -2,6 +2,12 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* bump CMake minimum version to avoid CMP0048 warning
+* add Python 3 conditional dependencies (`#6 <https://github.com/ros-visualization/rqt_logger_level/issues/6>`_)
+* autopep8 (`#4 <https://github.com/ros-visualization/rqt_logger_level/issues/4>`_)
+
 0.4.8 (2017-04-24)
 ------------------
 
