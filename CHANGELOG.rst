@@ -2,8 +2,8 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.10 (2020-05-20)
+-------------------
 * use catkin_install_python() (`#8 <https://github.com/ros-visualization/rqt_logger_level/issues/8>`_)
 
 0.4.9 (2020-03-11)
