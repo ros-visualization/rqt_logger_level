@@ -2,6 +2,10 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use catkin_install_python() (`#8 <https://github.com/ros-visualization/rqt_logger_level/issues/8>`_)
+
 0.4.9 (2020-03-11)
 ------------------
 * bump CMake minimum version to avoid CMP0048 warning
