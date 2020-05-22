@@ -2,6 +2,10 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* readd rqt_logger_level global executable, regression from 0.4.10 (`#9 <https://github.com/ros-visualization/rqt_logger_level/issues/9>`_)
+
 0.4.10 (2020-05-20)
 -------------------
 * use catkin_install_python() (`#8 <https://github.com/ros-visualization/rqt_logger_level/issues/8>`_)
