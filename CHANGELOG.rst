@@ -2,8 +2,8 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.11 (2020-05-22)
+-------------------
 * readd rqt_logger_level global executable, regression from 0.4.10 (`#9 <https://github.com/ros-visualization/rqt_logger_level/issues/9>`_)
 
 0.4.10 (2020-05-20)
