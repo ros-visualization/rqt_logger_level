@@ -16,6 +16,7 @@
   <url type="bugtracker">https://github.com/ros-visualization/rqt_logger_level/issues</url>
 
   <author>Aaron Blasdel</author>
+  <author>Dirk Thomas</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
