@@ -9,9 +9,9 @@
    <br />
   rqt_logger_level takes over `wx`-based tool [[rxloggerlevel]].
   </description>
-  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
   <maintainer email="ablasdel@gmail.com">Aaron Blasdel</maintainer>
   <maintainer email="arne.hitzmann@gmail.com">Arne Hitzmann</maintainer>
+  <maintainer email="geoff@openrobotics.org">Geoffrey Biggs</maintainer>
 
   <license>BSD</license>
 
@@ -20,6 +20,7 @@
   <url type="bugtracker">https://github.com/ros-visualization/rqt_logger_level/issues</url>
 
   <author>Aaron Blasdel</author>
+  <author>Dirk Thomas</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
