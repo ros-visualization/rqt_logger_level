@@ -2,6 +2,12 @@
 Changelog for package rqt_logger_level
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.4.12 (2023-10-02)
+-------------------
+* added LICENSE
+* Import setup from setuptools instead of distutils.core
+* Add xml-model
+
 0.4.11 (2020-05-22)
 -------------------
 * readd rqt_logger_level global executable, regression from 0.4.10 (`#9 <https://github.com/ros-visualization/rqt_logger_level/issues/9>`_)
