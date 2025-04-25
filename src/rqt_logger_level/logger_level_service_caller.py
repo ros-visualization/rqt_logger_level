@@ -113,7 +113,11 @@ class LoggerLevelServiceCaller(QObject):
         if self._current_levels[logger].lower() == level.lower():
             return False
 
-        service = rosservice.get_service_class_by_name(servicename)
+        try:
+            service = rosservice.get_service_class_by_name(servicename)
+        except rosservice.ROSServiceException as e:
+            qWarning('Failed to set logger level: %s' % e)
+            return False
         request = service._request_class()
         setattr(request, 'logger', logger)
         setattr(request, 'level', level)
